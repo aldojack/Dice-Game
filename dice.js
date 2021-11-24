@@ -19,7 +19,6 @@ class player{
     }
 }
 
-
 //DOM Variables
 const turnDisplay = document.getElementById('message');
 const player1Scoreboard = document.getElementById('player1Scoreboard');
@@ -41,12 +40,10 @@ const scoreLimit = 20;
 
 
 rollBtn.addEventListener('click',()=>{
-    if(player1.score <= scoreLimit && player2.score <=scoreLimit){
-        const randomDice = rollDice();
-        player1.playerTurn ? player1Dice.textContent = randomDice : player2Dice.textContent = randomDice;
-        updateMessage(randomDice);
-        checkTurn();
-    }
+    const randomDice = rollDice();
+    player1.playerTurn ? player1Dice.textContent = randomDice : player2Dice.textContent = randomDice;
+    updateMessage(randomDice);
+    checkTurn();
 })
 
 resetBtn.addEventListener('click',()=>{
@@ -62,6 +59,13 @@ function resetGame(){
     gameActive = true
     rollBtn.style.display = "inline-block";
     resetBtn.style.display = "none";
+    player1.score = 0;
+    player2.score = 0;
+    player1Dice.textContent = "-";
+    player2Dice.textContent = "-";
+    player1Scoreboard.textContent = player1.score;
+    player2Scoreboard.textContent = player2.score;
+    turnDisplay.textContent = `Player 1 Turn`;
 }
 
 function updateMessage(dice){
@@ -77,26 +81,33 @@ function updateScore(dice){
 function checkTurn(){
     player1.playerTurn  = !player1.playerTurn
     if(player1.playerTurn){
-        player1Dice.classList.remove('active');
-        player2Dice.classList.add('active');
+        activePlayer(player1Dice,player2Dice)
     }
     else{
-        player2Dice.classList.remove('active');
-        player1Dice.classList.add('active');
+        activePlayer(player2Dice,player1Dice)
     }
     checkWinner();
+}
+
+function renderButton(btn1,btn2){
+    rollBtn.style.display = "none";
+    resetBtn.style.display = "inline-block";
+}
+
+function activePlayer(p1,p2){
+    p1.classList.remove('active');
+    p2.classList.add('active');
 }
 
 function checkWinner(){
     if(player1.hasWon()){
         turnDisplay.textContent = `${player1.name} has won`;
-        rollBtn.style.display = "none";
-        resetBtn.style.display = "inline-block";
+        renderButton(rollBtn,resetBtn)
     }
     else if(player2.hasWon()){
         turnDisplay.textContent = `${player2.name} has won`;
-        rollBtn.style.display = "none";
-        resetBtn.style.display = "inline-block";
+        renderButton(rollBtn,resetBtn)
+
     }
 }
 
