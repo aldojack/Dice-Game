@@ -33,10 +33,21 @@ const players = [new player("Player 1"), new player("Player 2")];
 let gameActive = false;
 const scoreLimit = 20;
 
-
 rollBtn.addEventListener('click',()=>{
     const randomDice = rollDice();
-    players[0].playerTurn ? player1Dice.textContent = randomDice : player2Dice.textContent = randomDice;
+    if(isPlayer1Turn()){
+        player1Dice.textContent = randomDice;
+        player1Dice.classList.add('shake');
+    }
+    else{
+        player2Dice.textContent = randomDice;
+        player2Dice.classList.add('shake');
+    }
+    setTimeout(()=>{
+    player1Dice.classList.remove('shake');
+    player2Dice.classList.remove('shake');
+
+    },2000)
     updateDisplayUI(randomDice);
     checkTurn();
 })
@@ -49,33 +60,65 @@ function startGame(){
     gameActive = true;
     const startingPlayer = Math.floor(Math.random()*2)
     players[startingPlayer].playerTurn = true;
-    console.log(`${players[startingPlayer].name} is going first`)
+    turnDisplay.textContent = `${players[startingPlayer].name} Turn`;
+
+    if(isPlayer1Turn()){
+        player1Dice.classList.add('active');
+    }
+    else{
+        player2Dice.classList.add('active');
+    }
 }
 
 function resetGame(){
-    gameActive = true
-    showButton(resetBtn,rollBtn)
+    //Reset Player
     players[0].score = 0;
     players[1].score = 0;
+    players[0].playerTurn = false;
+    players[1].playerTurn = false;
+    
+    //Reset UI
     player1Dice.textContent = "-";
     player2Dice.textContent = "-";
     player1Scoreboard.textContent = players[0].score;
     player2Scoreboard.textContent = players[1].score;
-    turnDisplay.textContent = `Player 1 Turn`;
+
+    showButton(resetBtn,rollBtn)
+    startGame();
 }
 
 function updateDisplayUI(dice){
-    players[0].playerTurn ? turnDisplay.textContent = `${players[0].name} rolled ${dice}` : turnDisplay.textContent = `${players[1].name} rolled ${dice}`;
-    players[0].playerTurn ? player1Dice.textContent = dice : player2Dice.textContent = dice;
-    players[0].playerTurn ? player1Scoreboard.textContent = players[0].addScore(dice) : player2Scoreboard.textContent = players[1].addScore(dice);
+    //If Player 1's turn then update their dice number and message to display what they rolled otherwise update player 2
+    if(isPlayer1Turn()){
+        turnDisplay.textContent = `${players[0].name} rolled ${dice}`;
+        player1Dice.textContent = dice
+        player1Scoreboard.textContent = players[0].addScore(dice)
+    }
+    else if(players[1].playerTurn){
+        turnDisplay.textContent = `${players[1].name} rolled ${dice}`;
+        player2Dice.textContent = dice;
+        player2Scoreboard.textContent = players[1].addScore(dice);
+    }
+}
+
+function isPlayer1Turn(){
+    if (players[0].playerTurn){
+        return true
+    }
+    else{
+        return false;
+    }
 }
 
 function checkTurn(){
-    players[0].playerTurn  = !players[0].playerTurn
-    if(players[0].playerTurn){
+    if(isPlayer1Turn()){
+        players[0].playerTurn = false;
+        players[1].playerTurn = true
         activePlayer(player1Dice,player2Dice)
     }
     else{
+        players[0].playerTurn = true;
+        players[1].playerTurn = false;
         activePlayer(player2Dice,player1Dice)
     }
     checkWinner();
