@@ -8,6 +8,15 @@ class player{
     addScore(dice){
         return this.score += dice;
     }
+    hasWon(){
+        if(this.score >= scoreLimit){
+            gameActive = false
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }
 
 
@@ -23,17 +32,36 @@ const resetBtn = document.getElementById("resetBtn")
 //Declare variables
 let player1 = new player("Player 1");
 let player2 = new player("Player 2");
+console.log(player2)
+console.log(player1)
+
+
+let gameActive = false;
+const scoreLimit = 20;
 
 
 rollBtn.addEventListener('click',()=>{
-    const randomDice = rollDice();
-    player1.playerTurn ? player1Dice.textContent = randomDice : player2Dice.textContent = randomDice;
-    updateMessage(randomDice);
-    checkTurn();
+    if(player1.score <= scoreLimit && player2.score <=scoreLimit){
+        const randomDice = rollDice();
+        player1.playerTurn ? player1Dice.textContent = randomDice : player2Dice.textContent = randomDice;
+        updateMessage(randomDice);
+        checkTurn();
+    }
+})
+
+resetBtn.addEventListener('click',()=>{
+    resetGame();
 })
 
 function startGame(){
+    gameActive = true;
     player1.playerTurn = true;
+}
+
+function resetGame(){
+    gameActive = true
+    rollBtn.style.display = "inline-block";
+    resetBtn.style.display = "none";
 }
 
 function updateMessage(dice){
@@ -55,6 +83,20 @@ function checkTurn(){
     else{
         player2Dice.classList.remove('active');
         player1Dice.classList.add('active');
+    }
+    checkWinner();
+}
+
+function checkWinner(){
+    if(player1.hasWon()){
+        turnDisplay.textContent = `${player1.name} has won`;
+        rollBtn.style.display = "none";
+        resetBtn.style.display = "inline-block";
+    }
+    else if(player2.hasWon()){
+        turnDisplay.textContent = `${player2.name} has won`;
+        rollBtn.style.display = "none";
+        resetBtn.style.display = "inline-block";
     }
 }
 
