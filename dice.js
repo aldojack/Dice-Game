@@ -48,6 +48,14 @@ function updateScore(dice){
 
 function checkTurn(){
     player1.playerTurn  = !player1.playerTurn
+    if(player1.playerTurn){
+        player1Dice.classList.remove('active');
+        player2Dice.classList.add('active');
+    }
+    else{
+        player2Dice.classList.remove('active');
+        player1Dice.classList.add('active');
+    }
 }
 
 function rollDice(){
