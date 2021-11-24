@@ -1,3 +1,12 @@
+//DOM Objects
+const turnDisplay = document.getElementById('message');
+const player1Scoreboard = document.getElementById('player1Scoreboard');
+const player2Scoreboard = document.getElementById('player2Scoreboard');
+const player1Dice = document.getElementById('player1Dice');
+const player2Dice = document.getElementById('player2Dice');
+const rollBtn = document.getElementById("rollBtn")
+const resetBtn = document.getElementById("resetBtn")
+
 //Classes
 class player{
     constructor(name){
@@ -19,30 +28,16 @@ class player{
     }
 }
 
-//DOM Variables
-const turnDisplay = document.getElementById('message');
-const player1Scoreboard = document.getElementById('player1Scoreboard');
-const player2Scoreboard = document.getElementById('player2Scoreboard');
-const player1Dice = document.getElementById('player1Dice');
-const player2Dice = document.getElementById('player2Dice');
-const rollBtn = document.getElementById("rollBtn")
-const resetBtn = document.getElementById("resetBtn")
-
 //Declare variables
-let player1 = new player("Player 1");
-let player2 = new player("Player 2");
-console.log(player2)
-console.log(player1)
-
-
+const players = [new player("Player 1"), new player("Player 2")];
 let gameActive = false;
 const scoreLimit = 20;
 
 
 rollBtn.addEventListener('click',()=>{
     const randomDice = rollDice();
-    player1.playerTurn ? player1Dice.textContent = randomDice : player2Dice.textContent = randomDice;
-    updateMessage(randomDice);
+    players[0].playerTurn ? player1Dice.textContent = randomDice : player2Dice.textContent = randomDice;
+    updateDisplayUI(randomDice);
     checkTurn();
 })
 
@@ -52,35 +47,32 @@ resetBtn.addEventListener('click',()=>{
 
 function startGame(){
     gameActive = true;
-    player1.playerTurn = true;
+    const startingPlayer = Math.floor(Math.random()*2)
+    players[startingPlayer].playerTurn = true;
+    console.log(`${players[startingPlayer].name} is going first`)
 }
 
 function resetGame(){
     gameActive = true
-    rollBtn.style.display = "inline-block";
-    resetBtn.style.display = "none";
-    player1.score = 0;
-    player2.score = 0;
+    showButton(resetBtn,rollBtn)
+    players[0].score = 0;
+    players[1].score = 0;
     player1Dice.textContent = "-";
     player2Dice.textContent = "-";
-    player1Scoreboard.textContent = player1.score;
-    player2Scoreboard.textContent = player2.score;
+    player1Scoreboard.textContent = players[0].score;
+    player2Scoreboard.textContent = players[1].score;
     turnDisplay.textContent = `Player 1 Turn`;
 }
 
-function updateMessage(dice){
-    player1.playerTurn ? turnDisplay.textContent = `${player1.name} rolled ${dice}` : turnDisplay.textContent = `${player2.name} rolled ${dice}`;
-    updateScore(dice);
-}
-
-function updateScore(dice){
-    player1.playerTurn ? player1Dice.textContent = dice : player2Dice.textContent = dice;
-    player1.playerTurn ? player1Scoreboard.textContent = player1.addScore(dice) : player2Scoreboard.textContent = player2.addScore(dice);
+function updateDisplayUI(dice){
+    players[0].playerTurn ? turnDisplay.textContent = `${players[0].name} rolled ${dice}` : turnDisplay.textContent = `${players[1].name} rolled ${dice}`;
+    players[0].playerTurn ? player1Dice.textContent = dice : player2Dice.textContent = dice;
+    players[0].playerTurn ? player1Scoreboard.textContent = players[0].addScore(dice) : player2Scoreboard.textContent = players[1].addScore(dice);
 }
 
 function checkTurn(){
-    player1.playerTurn  = !player1.playerTurn
-    if(player1.playerTurn){
+    players[0].playerTurn  = !players[0].playerTurn
+    if(players[0].playerTurn){
         activePlayer(player1Dice,player2Dice)
     }
     else{
@@ -89,9 +81,9 @@ function checkTurn(){
     checkWinner();
 }
 
-function renderButton(btn1,btn2){
-    rollBtn.style.display = "none";
-    resetBtn.style.display = "inline-block";
+function showButton(btn1,btn2){
+    btn1.style.display = "none";
+    btn2.style.display = "inline-block";
 }
 
 function activePlayer(p1,p2){
@@ -100,14 +92,13 @@ function activePlayer(p1,p2){
 }
 
 function checkWinner(){
-    if(player1.hasWon()){
-        turnDisplay.textContent = `${player1.name} has won`;
-        renderButton(rollBtn,resetBtn)
+    if(players[0].hasWon()){
+        turnDisplay.textContent = `${players[0].name} has won`;
+        showButton(rollBtn,resetBtn)
     }
-    else if(player2.hasWon()){
-        turnDisplay.textContent = `${player2.name} has won`;
-        renderButton(rollBtn,resetBtn)
-
+    else if(players[1].hasWon()){
+        turnDisplay.textContent = `${players[1].name} has won`;
+        showButton(rollBtn,resetBtn)
     }
 }
 
